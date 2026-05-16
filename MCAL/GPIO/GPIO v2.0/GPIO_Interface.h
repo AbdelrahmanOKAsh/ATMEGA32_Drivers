@@ -1,6 +1,6 @@
 /****************************************************************************************************************************** 
 *                                            Author: Abdelrahman Gamal OKASHA                                                 *
-*			                                 Timestamp: 20/6/2022                                                             *
+*			                                 Created: 12/6/2025                                                               *
 *			                                 File: GPIO_Interface.h                                                           *
 *			                                 [GPIO Module Driver]                                                             *
 ******************************************************************************************************************************/
@@ -8,87 +8,76 @@
 #ifndef GPIO_INTERFACE_H_
 #define GPIO_INTERFACE_H_
 
-/* GPIO PORTs INTERFACE OPTIONs */
-typedef enum GPIO_PORTIDs
-{
-    PORTA = 0,
-    PORTB,
-    PORTC,
-    PORTD
-}PortID_t;
 
-/* GPIO PINs INTERFACE OPTIONs */
-typedef enum GPIO_PINIDs
-{
-    PIN0 = 0,
-    PIN1,
-    PIN2,
-    PIN3,
-    PIN4,
-    PIN5,
-    PIN6,
-    PIN7
-}PinID_t;
-
-/* GPIO PIN MODEs INTERFACE OPTIONs */
-typedef enum GPIO_PINMODEs
-{
-    INPUT_FLOATING = 0,
-    OUTPUT,
-    INPUT_INTERNALPULLUP
-}PinMode_t;
-
-/* GPIO PIN STATEs INTERFACE OPTIONs */
-typedef enum GPIO_PINSTATEs
-{
-    LOW = 0,
-    HIGH
-}PinState_t;
-
-/* GPIO PORT STATEs INTERFACE OPTIONs */
-typedef enum GPIO_PORTSTATEs
-{
-    PORT_LOW  = 0x00,
-    PORT_HIGH = 0xFF
-}PortState_t;
+/* GPIO PINs INTERFACE */
+#define GPIO_PIN0                   0
+#define GPIO_PIN1                   1 
+#define GPIO_PIN2                   2
+#define GPIO_PIN3                   3
+#define GPIO_PIN4                   4
+#define GPIO_PIN5                   5
+#define GPIO_PIN6                   6
+#define GPIO_PIN7                   7 
 
 
-typedef enum GPIO_PORTSIZE
-{
-    PORTSIZE_2 = 2,
-    PORTSIZE_3,
-    PORTSIZE_4,
-    PORTSIZE_5,
-    PORTSIZE_6,
-    PORTSIZE_7,
-    PORTSIZE_8
-}PortSize_t;
+/* INPUT/OUTPUT PIN INTERFACE */
+#define GPIO_PIN_INPUT              0
+#define GPIO_PIN_OUTPUT             1
 
 
-typedef struct GPIO_PINCONFIG
-{
-    PortID_t  PortID:2;
-    PinID_t   PinID:3;
-    PinMode_t PinMode:3;
-}GPIO_PinConfig;
+/* LOW/HIGH PIN INTERFACE */
+#define GPIO_PIN_LOW                0
+#define GPIO_PIN_HIGH               1
 
-VALIDATION GPIO_enumPinInit (const GPIO_PinConfig *PinConfig);
-VALIDATION GPIO_enumSetPinState (const GPIO_PinConfig *PinConfig,PinState_t Copy_enumPinState);
-VALIDATION GPIO_enumScanPinState (const GPIO_PinConfig *PinConfig,PinState_t* PtrPinState);
-VALIDATION GPIO_enumTogglePinState (const GPIO_PinConfig *PinConfig);
 
-typedef struct GPIO_PORTCONFIG
-{
-    PortID_t   PortID:2;
-    PinID_t    PortInitPinID:3;
-    PinMode_t  PortMode:3;
-    PortSize_t PortSize:8;
-}GPIO_PortConfig;
+/* GPIO PORTs INTERFACE */
+#define GPIO_PORTA                   0
+#define GPIO_PORTB                   1 
+#define GPIO_PORTC                   2
+#define GPIO_PORTD                   3
 
-VALIDATION GPIO_enumPortInit (const GPIO_PortConfig *PortConfig);
-VALIDATION GPIO_enumSetPortState (const GPIO_PortConfig *PortConfig,PortState_t Copy_enumPortState);
-VALIDATION GPIO_enumScanPortState (const GPIO_PortConfig *PortConfig,PortState_t* PtrPortState);
-VALIDATION GPIO_enumTogglePortState (const GPIO_PortConfig *PortConfig);
+
+/* INPUT/OUTPUT PORT INTERFACE */
+#define GPIO_PORT_INPUT              0x00
+#define GPIO_PORT_OUTPUT             0xFF
+ 
+ 
+/* LOW/HIGH PORT INTERFACE */ 
+#define GPIO_PORT_LOW                0x00
+#define GPIO_PORT_HIGH               0xFF
+
+
+
+
+/*=================================================== < PROVIDED APIs FOR GPIO PINs > ===================================================*/
+
+VALIDATION GPIO_SetPinMode      (u8 Copy_u8PortID,u8 Copy_u8PinID,u8 Copy_u8PinMode     );
+VALIDATION GPIO_SetPinValue     (u8 Copy_u8PortID,u8 Copy_u8PinID,u8 Copy_u8PinValue    );
+VALIDATION GPIO_ScanPinValue    (u8 Copy_u8PortID,u8 Copy_u8PinID,u8 *Copy_u8PtrPinValue);
+VALIDATION GPIO_TogglePinValue  (u8 Copy_u8PortID,u8 Copy_u8PinID                       );
+
+
+
+
+/*=================================================== < PROVIDED APIs FOR GPIO PORTs > ===================================================*/
+
+VALIDATION GPIO_SetPortMode      (u8 Copy_u8PortID,u8 Copy_u8PortMode     );
+VALIDATION GPIO_SetPortValue     (u8 Copy_u8PortID,u8 Copy_u8PortValue    );
+VALIDATION GPIO_ScanPortValue    (u8 Copy_u8PortID,u8 *Copy_u8PtrPortValue);
+VALIDATION GPIO_WriteHighNibbles (u8 Copy_u8PortID,u8 Copy_u8Value        );
+VALIDATION GPIO_WriteLowNibbles  (u8 Copy_u8PortID,u8 Copy_u8Value        );
+VALIDATION GPIO_TogglePortValue  (u8 Copy_u8PortID                        );
+
+
+/*================================================ < PROVIDED APIs FOR INTERNAL PULL UP > ================================================*/
+
+
+VALIDATION GPIO_EnableGlobalInternalPullUp    (                                );       
+VALIDATION GPIO_DisableGloballInternalPullUp  (                                );   
+VALIDATION GPIO_ConnectInternalPullUp         (u8 Copy_u8PortID,u8 Copy_u8PinID);
+VALIDATION GPIO_DisconnectInternalPullUp      (u8 Copy_u8PortID,u8 Copy_u8PinID);
+
+
 
 
 #endif /* GPIO_INTERFACE_H_ */

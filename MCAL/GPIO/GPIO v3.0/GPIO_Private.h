@@ -1,6 +1,6 @@
 /****************************************************************************************************************************** 
 *                                            Author: Abdelrahman Gamal OKASHA                                                 *
-*			                                 Created: 12/6/2025                                                               *
+*			                                 Timestamp: 20/6/2022                                                             *
 *			                                 File: GPIO_Private.h                                                             *
 *			                                 [GPIO Module Driver]                                                             *
 ******************************************************************************************************************************/
@@ -8,33 +8,30 @@
 #ifndef GPIO_PRIVATE_H_
 #define GPIO_PRIVATE_H_
 
-
 /* GPIOx REGISTER FILE */
-typedef struct
+typedef struct GPIO_REISTERFILEx
 {
     volatile u8 PIN;
     volatile u8 DDR;
     volatile u8 PORT;
-}GPIOx;
+}GPIO_REG;
 
 
-/* GPIO PORTs BASE ADDRESS */
-#define GPIOA_BASE_ADDRESS 0x39
-#define GPIOB_BASE_ADDRESS 0x36
-#define GPIOC_BASE_ADDRESS 0x33
-#define GPIOD_BASE_ADDRESS 0x30
+/* GPIOx BASE ADDRESSES */
+#define GPIOA_BASE_ADDRESS     0x3B
+#define GPIOB_BASE_ADDRESS     0x38
+#define GPIOC_BASE_ADDRESS     0x35
+#define GPIOD_BASE_ADDRESS     0x32
 
+/* GPIOx MEMORY MAPPING */
+#define GPIOA     ((GPIO_REG*) GPIOA_BASE_ADDRESS)
+#define GPIOB     ((GPIO_REG*) GPIOB_BASE_ADDRESS)
+#define GPIOC     ((GPIO_REG*) GPIOC_BASE_ADDRESS)
+#define GPIOD     ((GPIO_REG*) GPIOD_BASE_ADDRESS)
 
-/* GPIO PORTs MEMORY MAPPED */
-#define GPIOA      ((GPIOx*) (GPIOA_BASE_ADDRESS))
-#define GPIOB      ((GPIOx*) (GPIOB_BASE_ADDRESS))
-#define GPIOC      ((GPIOx*) (GPIOC_BASE_ADDRESS))
-#define GPIOD      ((GPIOx*) (GPIOD_BASE_ADDRESS))
-
-
-/* INTERNAL PULL UP REGISTER FILE */
-#define SFIOR      *((volatile u8*) 0x50)
-#define PUD        2
+/* SFIO REGISTER MEMORY MAPPING AND PUPD BIT NUMBER */
+#define SFIO *((u8*) 0x50)
+#define PUPD  2
 
 
 #endif /* GPIO_PRIVATE_H_ */
