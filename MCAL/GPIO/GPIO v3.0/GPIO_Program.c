@@ -149,7 +149,7 @@ VALIDATION GPIO_enumPortInit (const GPIO_PortConfig *PortConfig)
     VALIDATION Local_enumValidationStatus = VALID;
     if(PortConfig != NULL)
     {
-        if((PortConfig->PortID <= PORT_BOUNDRY) && (PortConfig->PortInitPinID <= PIN_BOUNDRY) && (PortConfig->PortSize <= PORTSIZE_8) && (PortConfig->PortMode <= INPUT_INTERNALPULLUP))
+        if((PortConfig->PortID <= PORT_BOUNDRY) && ((PortConfig->PortInitPinID + PortConfig->PortSize) <= PIN_BOUNDRY) && (PortConfig->PortMode <= INPUT_INTERNALPULLUP))
         {
             switch(PortConfig->PortMode)
             {
