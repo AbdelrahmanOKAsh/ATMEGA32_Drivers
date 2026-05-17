@@ -11,10 +11,10 @@
 /* GPIO PORTs INTERFACE OPTIONs */
 typedef enum GPIO_PORTIDs
 {
-    PORTA = 0,
-    PORTB,
-    PORTC,
-    PORTD
+    PORTA = 3,
+    PORTB = 2,
+    PORTC = 1,
+    PORTD = 0
 }PortID_t;
 
 /* GPIO PINs INTERFACE OPTIONs */

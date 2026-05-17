@@ -9,9 +9,6 @@
 #include "GPIO_Interface.h"
 #include "GPIO_Private.h"
 
-/* GPIOx IS AN ARRAY THAT HOLD POINTERS TO GPIOS PORTS [ GPIOA , GPIOB , GPIOC , GPIOD ] */
-static GPIO_REG* GPIOx[] = { GPIOA , GPIOB , GPIOC , GPIOD };
-
 
 /* PORTSIZEMASK IS AN ARRAY THAT HOLD EACH PORT SIZE MASK TO CORRESPONDING PORT SIZE */
 static u8 PortSizeMask[] = { 0b11 , 0b111 , 0b1111 , 0b11111 , 0b111111 , 0b1111111 , 0b11111111 };
@@ -27,20 +24,14 @@ VALIDATION GPIO_enumPinInit (const GPIO_PinConfig *PinConfig)
     VALIDATION Local_ValidationStatus = VALID;
     if(PinConfig != NULL)
     {
-        if((PinConfig->PortID <= PORTD) && (PinConfig->PinID <= PIN7) && (PinConfig->PinMode <= INPUT_INTERNALPULLUP))
+        if((PinConfig->PortID <= PORT_BOUNDRY) && (PinConfig->PinID <= PIN_BOUNDRY) && (PinConfig->PinMode <= INPUT_INTERNALPULLUP))
         {
             switch(PinConfig->PinMode)
             {
-                case INPUT_FLOATING : GPIOx[PinConfig->PortID]->DDR  &= ~(1 << PinConfig->PinID);
-                                      GPIOx[PinConfig->PortID]->PORT &= ~(1 << PinConfig->PinID);
-                                      break;
-                case OUTPUT         : GPIOx[PinConfig->PortID]->DDR |=  (1 << PinConfig->PinID);
-                                      break;
-                case INPUT_INTERNALPULLUP: GPIOx[PinConfig->PortID]->DDR  &= ~(1 << PinConfig->PinID);
-                                           GPIOx[PinConfig->PortID]->PORT |=  (1 << PinConfig->PinID);
-                                           SFIO &= ~(1 << PUPD);
-                                           break; 
-                default: Local_ValidationStatus = INVALID; break;
+                case INPUT_FLOATING      : GPIO[PinConfig->PortID].DDR  &= ~(1 << PinConfig->PinID); GPIO[PinConfig->PortID].PORT &= ~(1 << PinConfig->PinID);                       break;
+                case OUTPUT              : GPIO[PinConfig->PortID].DDR  |=  (1 << PinConfig->PinID);                                                                                 break;
+                case INPUT_INTERNALPULLUP: GPIO[PinConfig->PortID].DDR  &= ~(1 << PinConfig->PinID); GPIO[PinConfig->PortID].DDR  |=  (1 << PinConfig->PinID); SFIO &= ~(1 << PUPD); break; 
+                default: Local_ValidationStatus = INVALID;                                                                                                                           break;
             }
         }
 
@@ -74,9 +65,9 @@ VALIDATION GPIO_enumSetPinState (const GPIO_PinConfig *PinConfig,PinState_t Copy
     {
         switch(Copy_enumPinState)
         {
-            case LOW : GPIOx[PinConfig->PortID]->PORT &= ~(1 << PinConfig->PinID); break;
-            case HIGH: GPIOx[PinConfig->PortID]->PORT |=  (1 << PinConfig->PinID); break;
-            default  : Local_ValidationStatus = INVALID;                           break;
+            case LOW : GPIO[PinConfig->PortID].PORT &= ~(1 << PinConfig->PinID); break;
+            case HIGH: GPIO[PinConfig->PortID].PORT |=  (1 << PinConfig->PinID); break;
+            default  : Local_ValidationStatus = INVALID;                         break;
         }
     }
 
@@ -104,10 +95,10 @@ VALIDATION GPIO_enumScanPinState (const GPIO_PinConfig *PinConfig,PinState_t* Pt
     {
         switch(PinConfig->PinMode)
         {
-            case INPUT_FLOATING      : *PtrPinState = ((GPIOx[PinConfig->PortID]->PIN  >> PinConfig->PinID) & 1); break;
-            case OUTPUT              : *PtrPinState = ((GPIOx[PinConfig->PortID]->PORT >> PinConfig->PinID) & 1); break;
-            case INPUT_INTERNALPULLUP: *PtrPinState = ((GPIOx[PinConfig->PortID]->PIN  >> PinConfig->PinID) & 1); break;
-            default                  : Local_ValidationStatus = INVALID;                                          break;
+            case INPUT_FLOATING      : *PtrPinState = ((GPIO[PinConfig->PortID].PIN  >> PinConfig->PinID) & 1); break;
+            case OUTPUT              : *PtrPinState = ((GPIO[PinConfig->PortID].PORT >> PinConfig->PinID) & 1); break;
+            case INPUT_INTERNALPULLUP: *PtrPinState = ((GPIO[PinConfig->PortID].PIN  >> PinConfig->PinID) & 1); break;
+            default                  : Local_ValidationStatus = INVALID;                                        break;
         }
     }
 
@@ -133,7 +124,7 @@ VALIDATION GPIO_enumTogglePinState (const GPIO_PinConfig *PinConfig)
     VALIDATION Local_ValidationStatus = VALID;
     if(PinConfig != NULL)
     {
-        GPIOx[PinConfig->PortID]->PORT ^= (1 << PinConfig->PinID);
+        GPIO[PinConfig->PortID].PORT ^= (1 << PinConfig->PinID);
     }
 
     else
@@ -158,19 +149,13 @@ VALIDATION GPIO_enumPortInit (const GPIO_PortConfig *PortConfig)
     VALIDATION Local_ValidationStatus = VALID;
     if(PortConfig != NULL)
     {
-        if((PortConfig->PortID <= PORTD) && (PortConfig->PortInitPinID <= PIN7) && (PortConfig->PortSize <= PORTSIZE_8) && (PortConfig->PortMode <= INPUT_INTERNALPULLUP))
+        if((PortConfig->PortID <= PORT_BOUNDRY) && (PortConfig->PortInitPinID <= PIN_BOUNDRY) && (PortConfig->PortSize <= PORTSIZE_8) && (PortConfig->PortMode <= INPUT_INTERNALPULLUP))
         {
             switch(PortConfig->PortMode)
             {
-                case INPUT_FLOATING: GPIOx[PortConfig->PortID]->DDR  &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-                                     GPIOx[PortConfig->PortID]->PORT &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-                                     break;
-                case OUTPUT        : GPIOx[PortConfig->PortID]->DDR |= (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-                                     break;
-                case INPUT_INTERNALPULLUP: GPIOx[PortConfig->PortID]->DDR  &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-                                           GPIOx[PortConfig->PortID]->PORT |=  (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-                                           SFIO &= ~(1 << PUPD);
-                                           break;
+                case INPUT_FLOATING      : GPIO[PortConfig->PortID].DDR  &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID); GPIO[PortConfig->PortID].PORT &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);                       break;
+                case OUTPUT              : GPIO[PortConfig->PortID].DDR  |=  (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);                                                                                                                                break;
+                case INPUT_INTERNALPULLUP: GPIO[PortConfig->PortID].DDR  &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID); GPIO[PortConfig->PortID].PORT |=  (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID); SFIO &= ~(1 << PUPD); break;
             }
         }
 
@@ -202,8 +187,8 @@ VALIDATION GPIO_enumSetPortState (const GPIO_PortConfig *PortConfig,PortState_t 
     VALIDATION Local_ValidationStatus = VALID;
     if(PortConfig != NULL)
     {
-        GPIOx[PortConfig->PortID]->PORT &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
-        GPIOx[PortConfig->PortID]->PORT |=  (             Copy_enumPortState        << PortConfig->PortInitPinID); 
+        GPIO[PortConfig->PortID].PORT &= ~(PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
+        GPIO[PortConfig->PortID].PORT |=  (           Copy_enumPortState          << PortConfig->PortInitPinID); 
     }
 
     else
@@ -230,10 +215,10 @@ VALIDATION GPIO_enumScanPortState (const GPIO_PortConfig *PortConfig,PortState_t
     {
         switch(PortConfig->PortMode)
         {
-            case INPUT_FLOATING      : *PtrPortState = ((GPIOx[PortConfig->PortID]->PIN  >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
-            case OUTPUT              : *PtrPortState = ((GPIOx[PortConfig->PortID]->PORT >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
-            case INPUT_INTERNALPULLUP: *PtrPortState = ((GPIOx[PortConfig->PortID]->PIN  >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
-            default                  : Local_ValidationStatus = INVALID;                                                                                          break;
+            case INPUT_FLOATING      : *PtrPortState = ((GPIO[PortConfig->PortID].PIN  >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
+            case OUTPUT              : *PtrPortState = ((GPIO[PortConfig->PortID].PORT >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
+            case INPUT_INTERNALPULLUP: *PtrPortState = ((GPIO[PortConfig->PortID].PIN  >> PortConfig->PortInitPinID) & PortSizeMask[PortConfig->PortSize - 2]); break;
+            default                  : Local_ValidationStatus = INVALID;                                                                                        break;
         }
     }
 
@@ -259,7 +244,7 @@ VALIDATION GPIO_enumTogglePortState (const GPIO_PortConfig *PortConfig)
     VALIDATION Local_ValidationStatus = VALID;
     if(PortConfig != NULL)
     {
-        GPIOx[PortConfig->PortID]->PORT ^= (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
+        GPIO[PortConfig->PortID].PORT ^= (PortSizeMask[PortConfig->PortSize - 2] << PortConfig->PortInitPinID);
     }
 
     else

@@ -21,7 +21,6 @@
 *       [2]-LED ACTIVATION MODE                                                                                               *
 * RETURN: VALIDATION                                                                                                          *
 ******************************************************************************************************************************/
-
 VALIDATION LED_enumInit(const LED_t *LEDConfig)
 {
     VALIDATION Local_enumValidationStatus = VALID;
