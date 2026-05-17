@@ -28,10 +28,10 @@ VALIDATION GPIO_enumPinInit (const GPIO_PinConfig *PinConfig)
         {
             switch(PinConfig->PinMode)
             {
-                case INPUT_FLOATING      : GPIO[PinConfig->PortID].DDR  &= ~(1 << PinConfig->PinID); GPIO[PinConfig->PortID].PORT &= ~(1 << PinConfig->PinID);                       break;
-                case OUTPUT              : GPIO[PinConfig->PortID].DDR  |=  (1 << PinConfig->PinID);                                                                                 break;
+                case INPUT_FLOATING      : GPIO[PinConfig->PortID].DDR  &= ~(1 << PinConfig->PinID); GPIO[PinConfig->PortID].PORT &= ~(1 << PinConfig->PinID);                        break;
+                case OUTPUT              : GPIO[PinConfig->PortID].DDR  |=  (1 << PinConfig->PinID);                                                                                  break;
                 case INPUT_INTERNALPULLUP: GPIO[PinConfig->PortID].DDR  &= ~(1 << PinConfig->PinID); GPIO[PinConfig->PortID].PORT  |=  (1 << PinConfig->PinID); SFIO &= ~(1 << PUPD); break; 
-                default                  : Local_enumValidationStatus = INVALID;                                                                                                     break;
+                default                  : Local_enumValidationStatus = INVALID;                                                                                                      break;
             }
         }
 
